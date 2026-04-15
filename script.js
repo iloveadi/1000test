@@ -15,6 +15,7 @@ const CONFIG = {
 let engine, render, runner;
 let blocks = [];
 let selectedBlock = null;
+let audioCtx = null;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -98,7 +99,14 @@ function initPhysics() {
             context.translate(x, y);
             context.rotate(angle);
             context.fillStyle = '#073642';
-            context.fillText(block.cheonjamun.hanja, 0, 0);
+            
+            // Draw Number (Smaller)
+            context.font = '12px "Noto Sans KR"';
+            context.fillText(block.cheonjamun.id, 0, -18);
+            
+            // Draw Hanja (Larger)
+            context.font = 'bold 20px "Noto Sans KR"';
+            context.fillText(block.cheonjamun.hanja, 0, 8);
             context.restore();
         });
     });
@@ -145,6 +153,30 @@ function initBlocks() {
     });
 }
 
+// --- Audio Logic ---
+function playSuccessSound() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    // "Ppi-yuk!" sound: quick slide from 400Hz to 1200Hz
+    const now = audioCtx.currentTime;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+    
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start(now);
+    osc.stop(now + 0.2);
+}
+
 // --- UI & Quiz Logic ---
 function initUI() {
     const btnCancel = document.getElementById('btn-cancel');
@@ -187,6 +219,7 @@ function checkAnswer() {
     
     if (input === targetReading || input === targetHun) {
         // Correct!
+        playSuccessSound();
         removeBlock(selectedBlock);
         closeQuiz();
     } else {
