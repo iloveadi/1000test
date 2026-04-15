@@ -16,6 +16,7 @@ let engine, render, runner;
 let blocks = [];
 let selectedBlock = null;
 let audioCtx = null;
+let currentMode = 'classic'; // 'classic' or 'reverse'
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -104,9 +105,10 @@ function initPhysics() {
             context.font = '12px "Noto Sans KR"';
             context.fillText(block.cheonjamun.id, 0, -18);
             
-            // Draw Hanja (Larger)
+            // Draw Main Text (Hanja or Reading)
             context.font = 'bold 20px "Noto Sans KR"';
-            context.fillText(block.cheonjamun.hanja, 0, 8);
+            const displayText = currentMode === 'classic' ? block.cheonjamun.hanja : block.cheonjamun.reading;
+            context.fillText(displayText, 0, 8);
             context.restore();
         });
     });
@@ -180,26 +182,90 @@ function playSuccessSound() {
 // --- UI & Quiz Logic ---
 function initUI() {
     const btnCancel = document.getElementById('btn-cancel');
+    const btnCancelChoice = document.getElementById('btn-cancel-choice');
     const btnSubmit = document.getElementById('btn-submit');
     const input = document.getElementById('answer-input');
+    
+    // Mode Buttons
+    const modeClassicBtn = document.getElementById('mode-classic');
+    const modeReverseBtn = document.getElementById('mode-reverse');
+
+    modeClassicBtn.addEventListener('click', () => switchMode('classic'));
+    modeReverseBtn.addEventListener('click', () => switchMode('reverse'));
 
     btnCancel.addEventListener('click', closeQuiz);
+    btnCancelChoice.addEventListener('click', closeQuiz);
     btnSubmit.addEventListener('click', checkAnswer);
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkAnswer();
     });
 }
 
+function switchMode(mode) {
+    if (currentMode === mode) return;
+    currentMode = mode;
+    
+    document.getElementById('mode-classic').classList.toggle('active', mode === 'classic');
+    document.getElementById('mode-reverse').classList.toggle('active', mode === 'reverse');
+}
+
 function showQuiz(block) {
     selectedBlock = block;
     const container = document.getElementById('quiz-container');
     const display = document.getElementById('quiz-hanja');
-    const input = document.getElementById('answer-input');
+    
+    const inputGroup = document.getElementById('mode-input-group');
+    const choiceGroup = document.getElementById('mode-choice-group');
 
-    display.innerText = block.cheonjamun.hanja;
-    input.value = '';
+    if (currentMode === 'classic') {
+        display.innerText = block.cheonjamun.hanja;
+        inputGroup.style.display = 'block';
+        choiceGroup.style.display = 'none';
+        const input = document.getElementById('answer-input');
+        input.value = '';
+        setTimeout(() => input.focus(), 100);
+    } else {
+        display.innerText = block.cheonjamun.reading;
+        inputGroup.style.display = 'none';
+        choiceGroup.style.display = 'block';
+        generateChoices(block);
+    }
+    
     container.classList.add('active');
-    setTimeout(() => input.focus(), 100);
+}
+
+function generateChoices(correctBlock) {
+    const container = document.getElementById('choice-container');
+    container.innerHTML = '';
+    
+    // Pick 3 random distractors
+    const distractors = cheonjamunData
+        .filter(d => d.id !== correctBlock.cheonjamun.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+    
+    const choices = [correctBlock.cheonjamun, ...distractors]
+        .sort(() => 0.5 - Math.random());
+    
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-button';
+        btn.innerText = choice.hanja;
+        btn.onclick = () => checkChoice(choice.hanja);
+        container.appendChild(btn);
+    });
+}
+
+function checkChoice(selectedHanja) {
+    if (selectedHanja === selectedBlock.cheonjamun.hanja) {
+        playSuccessSound();
+        removeBlock(selectedBlock);
+        closeQuiz();
+    } else {
+        const container = document.getElementById('quiz-container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 400);
+    }
 }
 
 function closeQuiz() {

@@ -19,7 +19,11 @@
 <body>
     <header>
         <h1>천자문 암기 연습 (1-104)</h1>
-        <p class="hint">블록을 드래그하여 던지거나, 클릭하여 퀴즈를 풀어보세요.</p>
+        <div class="mode-toggle">
+            <button id="mode-classic" class="active">기본 모드</button>
+            <button id="mode-reverse">반대로 하기</button>
+        </div>
+        <p class="hint">블록을 던지거나 클릭하여 퀴즈를 풀어보세요.</p>
     </header>
 
     <div id="canvas-container"></div>
@@ -27,10 +31,20 @@
     <!-- Quiz Overlay -->
     <div id="quiz-container">
         <div class="hanja-display" id="quiz-hanja"></div>
-        <input type="text" id="answer-input" placeholder="정답(독음 또는 훈음)을 입력하세요" autocomplete="off">
-        <div class="button-group">
-            <button class="cancel" id="btn-cancel">취소</button>
-            <button class="submit" id="btn-submit">확인</button>
+        
+        <!-- Classic Input Mode -->
+        <div id="mode-input-group">
+            <input type="text" id="answer-input" placeholder="정답을 입력하세요" autocomplete="off">
+            <div class="button-group">
+                <button class="cancel" id="btn-cancel">취소</button>
+                <button class="submit" id="btn-submit">확인</button>
+            </div>
+        </div>
+
+        <!-- Reverse Choice Mode -->
+        <div id="mode-choice-group" style="display: none;">
+            <div id="choice-container" class="choice-grid"></div>
+            <button class="cancel" id="btn-cancel-choice" style="width: 100%; margin-top: 15px;">취소</button>
         </div>
     </div>
 
