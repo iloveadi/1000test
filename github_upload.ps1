@@ -1,19 +1,14 @@
 Write-Host "GitHub 업로드를 시작합니다..." -ForegroundColor Cyan
 
-# Git 초기화
-if (!(Test-Path .git)) {
-    git init
-}
+# Git 초기화 (폴더가 없으면 초기화)
+if (-not (Test-Path ".git")) { git init }
 
-# 모든 파일 추가 및 커밋
+# 파일 추가 및 커밋
 git add .
 git commit -m "Initial commit: 천자문 암기 연습 웹페이지 제작 완료 (번호 추가 및 효과음 적용)"
 
-# 원격 저장소 연결 (기존 연결이 있으면 갱신)
-$remote = git remote
-if ($remote -contains "origin") {
-    git remote remove origin
-}
+# 원격 저장소 연결 (기본 origin 제거 시도 후 추가)
+git remote remove origin 2>$null
 git remote add origin https://github.com/iloveadi/1000test.git
 
 # 메인 브랜치 설정 및 푸시
