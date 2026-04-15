@@ -1,3 +1,7 @@
+# 한글 깨짐 방지 설정
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
+
 Write-Host "GitHub 업로드를 시작합니다..." -ForegroundColor Cyan
 
 # Git 초기화 (폴더가 없으면 초기화)
