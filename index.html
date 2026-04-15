@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>천자문 암기 연습 - 안티그래비티 물리 엔진</title>
+    <meta name="description" content="Matter.js 물리 엔진을 적용한 천자문 104구절 암기 연습 페이지">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Matter.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>천자문 암기 연습 (1-104)</h1>
+        <p class="hint">블록을 드래그하여 던지거나, 클릭하여 퀴즈를 풀어보세요.</p>
+    </header>
+
+    <div id="canvas-container"></div>
+
+    <!-- Quiz Overlay -->
+    <div id="quiz-container">
+        <div class="hanja-display" id="quiz-hanja"></div>
+        <input type="text" id="answer-input" placeholder="정답(독음 또는 훈음)을 입력하세요" autocomplete="off">
+        <div class="button-group">
+            <button class="cancel" id="btn-cancel">취소</button>
+            <button class="submit" id="btn-submit">확인</button>
+        </div>
+    </div>
+
+    <!-- Data and Scripts -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
